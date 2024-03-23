@@ -6,8 +6,36 @@ document.addEventListener('DOMContentLoaded', () => {
     const closeButton = document.querySelector('.close-button');
     const networkListDiv = document.getElementById('networks-list');
 
+    // Function to fetch and display networks
+    function fetchAndDisplayNetworks() {
+        fetch('fetch_networks.php')
+            .then(response => response.json())
+            .then(data => {
+                networkListDiv.innerHTML = ''; // Clear current list
+                if (data.error) {
+                    // If the PHP script returned an error, log it
+                    console.error('Error fetching networks:', data.error);
+                    networkListDiv.textContent = 'Error fetching networks.';
+                } else {
+                    // Iterate over the network data and append it to the list
+                    data.forEach(network => {
+                        const networkDiv = document.createElement('div');
+                        networkDiv.className = 'network-name';
+                        networkDiv.textContent = network;
+                        networkListDiv.appendChild(networkDiv);
+                    });
+                }
+            })
+            .catch(error => {
+                // Log any fetch errors
+                console.error('Fetch error:', error);
+                networkListDiv.textContent = 'Error fetching networks.';
+            });
+    }
+
     connectNewButton.addEventListener('click', () => {
         modal.style.display = 'block';
+        fetchAndDisplayNetworks(); // Fetch and display networks when modal is shown
     });
 
     closeButton.addEventListener('click', () => {
@@ -19,54 +47,5 @@ document.addEventListener('DOMContentLoaded', () => {
         if (event.target === modal) {
             modal.style.display = 'none';
         }
-    });
-
-    function fetchNetworks() {
-        fetch('scan.php')
-            .then(response => response.json())
-            .then(networks => {
-                // Clear the current list
-                const networkListDiv = document.getElementById('networks-list');
-                networkListDiv.innerHTML = '';
-
-                // Add networks to the list
-                networks.forEach(network => {
-                    const networkDiv = document.createElement('div');
-                    networkDiv.className = 'network-name';
-                    networkDiv.textContent = network;
-                    networkListDiv.appendChild(networkDiv);
-                });
-            })
-            .catch(error => {
-                console.error('Error fetching networks:', error);
-            });
-    }
-
-    // Function to display networks, now using AJAX to get the data
-    function displayNetworks() {
-        fetch('fetch_networks.php')
-            .then(response => response.json())
-            .then(data => {
-                if (Array.isArray(data)) {
-                    // It's an array, proceed as expected
-                    displayNetworks(data);
-                } else {
-                    // It's not an array, handle error or unexpected format
-                    console.error('Received data is not an array:', data);
-                }
-            })
-            .catch(error => console.error('Error fetching networks:', error));
-    }
-
-
-
-    connectNewButton.addEventListener('click', () => {
-        modal.style.display = 'block';
-        fetchNetworks();
-    });
-
-    connectNewButton.addEventListener('click', () => {
-        modal.style.display = 'block';
-        displayNetworks(); // Call this function to populate the list
     });
 });
