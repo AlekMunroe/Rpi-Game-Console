@@ -22,7 +22,7 @@
     $services = ['Luna', 'RetroPie', 'Xbox', 'Steam'];
     foreach ($services as $service) {
         echo "<div class='service' id='service-" . strtolower($service) . "' onclick='playAnimationAndLoadContent(this.id)'>";
-        echo "<img src='img/services/" . strtolower($service) . "_logo.png' alt='" . $service . " Logo'>";
+        echo "<img src='/img/services/" . strtolower($service) . "_logo.png' alt='" . $service . " Logo'>";
         echo "</div>";
     }
     ?>

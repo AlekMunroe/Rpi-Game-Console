@@ -15,6 +15,7 @@ Install the chrome extension in "Chrome-Extension" in developer mode and run.
 * Added a top menu for other buttons (Placeholder button and settings button)
 * The settings button will take you to a separate page at /menus/settings/index.php to act like a settings screen
 * The settings screen has template buttons setup
+* Fixed image capitalisation names
 
 ## V1 - Alpha
 * The buttons will open sites in new tabs
