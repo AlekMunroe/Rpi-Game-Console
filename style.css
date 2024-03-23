@@ -1,0 +1,102 @@
+/* style.css */
+body {
+    font-family: 'Arial', sans-serif;
+    background-color: #003087;
+    color: white;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+}
+
+.dashboard {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.service {
+    width: 150px; /* Adjust as needed for your specific logo size */
+    height: 150px; /* This makes the button square */
+    margin: 10px;
+    background-color: #006CFA;
+    border-radius: 10px; /* You may adjust or remove the border-radius if you want perfect squares */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    cursor: pointer;
+    transition: transform 0.2s;
+    position: relative; /* This ensures the name label can be absolutely positioned */
+}
+
+    .service:hover, .top-button:hover,
+    .service.hover, .top-button.hover {
+        transform: scale(1.1);
+    }
+
+    .service.hover {
+        transform: scale(1.1);
+    }
+
+
+    .service img {
+        max-width: 80%; /* This keeps the logo within the button */
+        max-height: 80%; /* Adjust the max values to prevent overflow */
+    }
+
+.service-name {
+    position: absolute; /* This positions the name at the bottom of the button */
+    bottom: 10px;
+    width: 100%;
+    text-align: center;
+    color: #ffffff;
+    font-size: 14px; /* Adjust font size as necessary */
+}
+
+/* Add to your style.css */
+.service.selected {
+    /* Simple scaling animation */
+    animation: scaleUp 0.5s forwards;
+}
+
+@keyframes scaleUp {
+    from {
+        transform: scale(1.1);
+    }
+
+    to {
+        transform: scale(1.2); /* End the animation with a slightly larger scale */
+        opacity: 0; /* Fade out */
+    }
+}
+
+#service-iframe {
+    display: none; /* Hidden by default */
+    position: fixed; /* Fullscreen */
+    top: 0;
+    left: 0;
+    border: none; /* Remove iframe border */
+    z-index: 1000; /* Ensure it's above everything else */
+}
+
+.top-menu {
+    position: absolute;
+    top: 0;
+    right: 0;
+    padding: 10px;
+    display: flex;
+    align-items: center;
+}
+
+.top-button {
+    margin-left: 20px; /* Spacing between buttons */
+    cursor: pointer;
+}
+
+.top-button img {
+    width: 50px; /* Example size, adjust as needed */
+    height: auto;
+}
