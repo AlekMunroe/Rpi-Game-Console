@@ -20,14 +20,14 @@
         <div id="networks-list">
             <!-- Dynamically populated list of networks will go here -->
         </div>
-        <div id="network-password-input">
-            <input type="password" placeholder="Enter Password">
+        <div id="network-password-input" style="display:none;">
+            <span id="network-name-display"></span>
+            <input type="password" id="network-password" placeholder="Enter Password">
             <button id="connect-button">Connect</button>
         </div>
     </div>
 </div>
 
 <script src="script.js"></script>
-<script src="input.js"></script>
 </body>
 </html>
