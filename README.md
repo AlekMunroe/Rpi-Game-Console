@@ -4,6 +4,7 @@
 ## Getting started
 
 This is an incomplete project still in alpha.
+Install the chrome extension in "Chrome-Extension" in developer mode and run.
 
 ## Getting started - Rpi 4
 
