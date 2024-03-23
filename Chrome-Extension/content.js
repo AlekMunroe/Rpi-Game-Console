@@ -1,26 +1,26 @@
-let lastButtonStates = []; // Track the last state of all buttons
-let buttonHoldTimers = []; // Timers for holding the button down, one for each gamepad
+let lastButtonStates = []; //Last state of all buttons
+let buttonHoldTimers = []; //Timers for holding the home button down (For each controller)
 
 function scanGamepads() {
     const gamepads = navigator.getGamepads ? navigator.getGamepads() : [];
     for (let gp of gamepads) {
-        if (gp && gp.buttons[16]) {
+        if (gp && gp.buttons[16]) { //Button 16 is the home button
             if (gp.buttons[16].pressed !== lastButtonStates[gp.index]?.[16]) {
                 console.log(`Gamepad ${gp.index} Home Button: ${gp.buttons[16].pressed ? 'Pressed' : 'Released'}`);
                 if (!lastButtonStates[gp.index]) {
                     lastButtonStates[gp.index] = [];
                 }
-                lastButtonStates[gp.index][16] = gp.buttons[16].pressed; // Update the last state
+                lastButtonStates[gp.index][16] = gp.buttons[16].pressed; //Update the last state
 
-                // If the Home button is pressed, start the timer
+                //If the Home button is pressed, start the timer
                 if (gp.buttons[16].pressed) {
-                    // Clear any existing timer to avoid duplicates
+                    //Clear any timers that have already started
                     clearTimeout(buttonHoldTimers[gp.index]);
                     buttonHoldTimers[gp.index] = setTimeout(() => {
                         chrome.runtime.sendMessage({ action: "checkAndCloseTab" });
-                    }, 2000); // 2000 milliseconds = 2 seconds
+                    }, 2000); //Time
                 } else {
-                    // If the button is released before 3 seconds, clear the timer
+                    //If the button is released early, clear the timer
                     clearTimeout(buttonHoldTimers[gp.index]);
                 }
             }
@@ -29,14 +29,14 @@ function scanGamepads() {
     window.requestAnimationFrame(scanGamepads);
 }
 
-// Initialize the button states array when a gamepad is connected
+//Initialise the button states array when a gamepad is connected
 window.addEventListener("gamepadconnected", function (event) {
     console.log(`Gamepad connected at index ${event.gamepad.index}: ${event.gamepad.id}.`);
     if (!lastButtonStates[event.gamepad.index]) {
         lastButtonStates[event.gamepad.index] = new Array(event.gamepad.buttons.length).fill(false);
-        buttonHoldTimers[event.gamepad.index] = null; // Initialize timer slot for this gamepad
+        buttonHoldTimers[event.gamepad.index] = null; //Initialize timer slot for this gamepad
     }
-    scanGamepads(); // Start scanning gamepads
+    scanGamepads(); //Start scanning gamepads
 });
 
 window.requestAnimationFrame(scanGamepads);

@@ -1,5 +1,5 @@
 function playAnimationAndLoadContent(serviceId) {
-    // Define your URL map as before
+    //URLs
     const urlMap = {
         'service-luna': 'https://luna.amazon.com/',
         'service-retropie': 'http://retropie.local/',
@@ -7,12 +7,12 @@ function playAnimationAndLoadContent(serviceId) {
         'service-steam': 'https://store.steampowered.com/'
     };
 
-    window.urlMap = urlMap; // Make it accessible globally
+    window.urlMap = urlMap; //Make the URLs public
 
-    // Use window.open to open the new tab
+    //Open the URL in a new tab (So we can go back later)
     const newTab = window.open(urlMap[serviceId], '_blank');
 
-    // Save the reference to the new tab globally if needed for later
+    //Save the reference to the new tab globally if needed later
     window.lastOpenedTab = newTab;
 }
 

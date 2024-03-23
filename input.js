@@ -1,35 +1,35 @@
 document.addEventListener('DOMContentLoaded', () => {
-    let currentIndex = 0; // Keep track of the current service index
-    let inTopMenu = false; // Flag to track if the top menu is focused
-    const services = document.querySelectorAll('.service'); // Grab all service elements
-    const topButtons = document.querySelectorAll('.top-button'); // Grab top menu buttons
-    let inputCooldown = false; // Cooldown flag to prevent rapid input
-    let buttonReleased = true; // Flag to ensure button release before re-triggering
+    let currentIndex = 0; //Keep track of the current service index
+    let inTopMenu = false; //Track if the top menu is in focus
+    const services = document.querySelectorAll('.service'); //Get all service elements (Bottom row)
+    const topButtons = document.querySelectorAll('.top-button'); //Get top menu buttons (Top row)
+    let inputCooldown = false; //Cooldown to prevent rapid input
+    let buttonReleased = true; //Used to check if the button has bene released (for inputCooldown)
 
-    // Function to update the hover state on the buttons
+    //Update the hover state on the buttons
     function updateHover(newIndex, inTop) {
-        // First, remove the hover class from all buttons
+        //Remove the hover class from all buttons
         topButtons.forEach(button => button.classList.remove('hover'));
         services.forEach(service => service.classList.remove('hover'));
 
-        // If we're in the top menu, handle navigation within the top buttons
+        //Checking where to handle navigation
         if (inTop) {
-            // Prevent newIndex from going out of bounds
+            //Stop newIndex from going out of bounds
             newIndex = Math.max(0, Math.min(newIndex, topButtons.length - 1));
             topButtons[newIndex].classList.add('hover');
-            currentIndex = newIndex; // Update the current index within the top menu
+            currentIndex = newIndex; //Update the current index in the top menu
         } else {
-            // Prevent newIndex from going out of bounds for services
+            //Stop newIndex from going out of bounds
             newIndex = Math.max(0, Math.min(newIndex, services.length - 1));
             services[newIndex].classList.add('hover');
-            currentIndex = newIndex; // Update the current index within the services
+            currentIndex = newIndex; //Update the current index in the services
         }
     }
 
-    // Apply hover effect to the first button by default
+    //Apply hover effect to the first button by default
     updateHover(0, false);
 
-    // Function to simulate a click on the current service
+    //Simulate a click on the current service
     function selectCurrentService() {
         if (inTopMenu) {
             topButtons[currentIndex].click();
@@ -38,36 +38,37 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // Keyboard input
+    //Keyboard input
     document.addEventListener('keydown', (event) => {
         let newIndex = currentIndex;
         switch (event.key) {
             case 'ArrowUp':
-                if (!inTopMenu && currentIndex === 0) {
-                    // Move to the first top button (placeholder) when pressing up on the first service
+                console.log("hi");
+                if (!inTopMenu) {
+                    //Move to the first top button (placeholder) when pressing up on the first service
                     inTopMenu = true;
-                    newIndex = 0; // The index for the first top button
+                    newIndex = 0; //The index for the first top button
                 }
                 break;
             case 'ArrowDown':
                 if (inTopMenu) {
-                    // Move back to the first service when pressing down in the top menu
+                    //Move back to the first service when pressing down
                     inTopMenu = false;
-                    newIndex = 0; // The index for the first service
+                    newIndex = 0; //The index for the first service
                 }
                 break;
             case 'ArrowRight':
                 if (inTopMenu) {
-                    newIndex = (currentIndex + 1) % topButtons.length; // Loop around in the top menu
+                    newIndex = (currentIndex + 1) % topButtons.length; //Loop around in the top menu
                 } else {
-                    newIndex = currentIndex + 1; // Move right in the services
+                    newIndex = currentIndex + 1; //Move right in the services
                 }
                 break;
             case 'ArrowLeft':
                 if (inTopMenu) {
-                    newIndex = (currentIndex - 1 + topButtons.length) % topButtons.length; // Loop around in the top menu
+                    newIndex = (currentIndex - 1 + topButtons.length) % topButtons.length; //Loop around in the top menu
                 } else {
-                    newIndex = currentIndex - 1; // Move left in the services
+                    newIndex = currentIndex - 1; //Move left in the services
                 }
                 break;
             case 'Enter':
@@ -79,56 +80,56 @@ document.addEventListener('DOMContentLoaded', () => {
 
     topButtons.forEach((button, index) => {
         button.addEventListener('mouseover', () => {
-            inTopMenu = true; // Switch focus to top menu on hover
+            inTopMenu = true; //Switch focus to the top menu on hover
             updateHover(index, inTopMenu);
         });
     });
 
-    // Mouse input - add mouseover event to all service elements
+    //Mouse input
     services.forEach((service, index) => {
         service.addEventListener('mouseover', () => {
-            inTopMenu = false; // Switch focus to services on hover
+            inTopMenu = false; //Switch focus to services on hover
             updateHover(index, inTopMenu);
         });
     });
 
-    // Gamepad input will need to be checked regularly
+    //Gamepad input
     function scanGamepads() {
         const gamepads = navigator.getGamepads ? navigator.getGamepads() : [];
         if (gamepads[0] && !inputCooldown) {
             let gp = gamepads[0];
 
-            // Vertical movement on the joystick (Axes 1)
-            if (gp.axes[1] < -0.5 && !inTopMenu) { // Joystick moved up
-                inTopMenu = true; // Move focus to top menu
-                currentIndex = 0; // Reset to the first icon
+            //Vertical movement on the left joystick (Axes 1)
+            if (gp.axes[1] < -0.5 && !inTopMenu) { //Joystick moved up
+                inTopMenu = true; //Move focus to the top menu
+                currentIndex = 0; //Reset to the the first icon
                 updateHover(currentIndex, inTopMenu);
                 activateCooldown();
-            } else if (gp.axes[1] > 0.5 && inTopMenu) { // Joystick moved down
-                inTopMenu = false; // Move focus back to services
-                currentIndex = 0; // Reset to the first service
+            } else if (gp.axes[1] > 0.5 && inTopMenu) { //Joystick moved down
+                inTopMenu = false; //Move focus back to the services
+                currentIndex = 0; //Reset to the first service
                 updateHover(currentIndex, inTopMenu);
                 activateCooldown();
             }
 
-            // Handle D-pad Up or Left Stick Up to navigate to the top menu
+            //D-pad Up or Left Joystick Up (Go to top menu)
             if (gp.buttons[12].pressed && !inTopMenu) {
                 inTopMenu = true;
-                currentIndex = 0; // Start from the first top button when moving up
+                currentIndex = 0; //Start from the first top button
                 updateHover(currentIndex, inTopMenu);
                 activateCooldown();
             }
-            // Handle D-pad Down or Left Stick Down to navigate back to the services
+            //D-pad Down or Left Joystick Down (Go to services)
             else if (gp.buttons[13].pressed && inTopMenu) {
                 inTopMenu = false;
-                currentIndex = 0; // Start from the first service when moving down
+                currentIndex = 0; //Start from the first service
                 updateHover(currentIndex, inTopMenu);
                 activateCooldown();
             }
-            // Handle D-pad Right or Left Stick Right
+            //D-pad Right or Left Joystick moving Right
             else if (gp.buttons[15].pressed || gp.axes[0] > 0.5) {
                 if (inTopMenu) {
-                    // Only move right if we are not at the last top button
+                    //Only move right if we are not at the last top button
                     if (currentIndex < topButtons.length - 1) {
                         currentIndex++;
                         updateHover(currentIndex, inTopMenu);
@@ -139,10 +140,10 @@ document.addEventListener('DOMContentLoaded', () => {
                     activateCooldown();
                 }
             }
-            // Handle D-pad Left or Left Stick Left
+            //D-pad Left or Left Joystick moving Left
             else if (gp.buttons[14].pressed || gp.axes[0] < -0.5) {
                 if (inTopMenu) {
-                    // Only move left if we are not at the first top button
+                    //Only move left if we are not at the first top button
                     if (currentIndex > 0) {
                         currentIndex--;
                         updateHover(currentIndex, inTopMenu);
@@ -153,13 +154,13 @@ document.addEventListener('DOMContentLoaded', () => {
                     activateCooldown();
                 }
             }
-            // Handle A button on Xbox controller or Cross on PlayStation
+            //X (playstation) A (xbox)
             else if (gp.buttons[0].pressed && buttonReleased) {
                 selectCurrentService();
-                buttonReleased = false; // Button must be released before it can trigger again
+                buttonReleased = false; //Button must be released before it can be used again
                 activateCooldown();
             } else if (!gp.buttons[0].pressed) {
-                buttonReleased = true; // Button has been released, can trigger action again
+                buttonReleased = true; //Allow the button to be used again
             }
         }
         window.requestAnimationFrame(scanGamepads);
@@ -168,7 +169,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function activateCooldown() {
         inputCooldown = true;
-        setTimeout(() => { inputCooldown = false; }, 200); // Cooldown period in milliseconds
+        setTimeout(() => { inputCooldown = false; }, 200); //Cooldown time
     }
 
     window.addEventListener("gamepadconnected", (event) => {
@@ -176,7 +177,7 @@ document.addEventListener('DOMContentLoaded', () => {
         scanGamepads();
     });
 
-    // Start the gamepad scanning loop
+    //Start scanning for gamepads in a loop
     window.requestAnimationFrame(scanGamepads);
 
 });

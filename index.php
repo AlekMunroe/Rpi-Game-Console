@@ -8,11 +8,9 @@
 </head>
 <body>
 <div class="top-menu">
-    <!-- Placeholder button -->
     <div class="top-button placeholder">
         <img src="img/icons/placeholder.png" alt="Placeholder">
     </div>
-    <!-- Settings button -->
     <div class="top-button" id="settings-button" onclick="openSettings()">
         <img src="img/icons/settings-cog.png" alt="Settings">
     </div>
