@@ -63,6 +63,9 @@ chromium-browser http://localhost
 
 ## Versions
 
+## V2.1 - Alpha
+* Added a network page which scans networks, it does not currently have full functionality to connect to a network
+
 ## V2 - Alpha
 * Created a chrome extension which will close any tab not named "Game Console". This only works when you hold down the home button for 2 seconds
 * Added a top menu for other buttons (Placeholder button and settings button)
