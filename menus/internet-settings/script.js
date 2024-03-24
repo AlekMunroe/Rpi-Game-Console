@@ -11,10 +11,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function toggleModal(show) {
         modal.style.display = show ? 'block' : 'none';
-        if (show) {
-            networkPasswordInput.style.display = 'none'; // Hide password input initially
-            fetchAndDisplayNetworks();
-        }
+        networkPasswordInput.style.display = 'none'; // Hide password input initially
     }
 
     // Function to fetch and display networks
@@ -29,18 +26,16 @@ document.addEventListener('DOMContentLoaded', () => {
                     networkListDiv.textContent = 'Error fetching networks.';
                 } else {
                     data.forEach(network => {
-                        if (network) { // Ensure the network name isn't empty
-                            const networkDiv = document.createElement('div');
-                            networkDiv.className = 'network-name';
-                            networkDiv.textContent = network;
-                            networkDiv.addEventListener('click', () => {
-                                selectedNetwork = network;
-                                networkNameDisplay.textContent = `Connect to ${selectedNetwork}`;
-                                networkPassword.value = ''; // Clear password input
-                                networkPasswordInput.style.display = 'block'; // Show password input
-                            });
-                            networkListDiv.appendChild(networkDiv);
-                        }
+                        const networkDiv = document.createElement('div');
+                        networkDiv.className = 'network-name';
+                        networkDiv.textContent = network;
+                        networkDiv.addEventListener('click', () => {
+                            selectedNetwork = network;
+                            networkNameDisplay.textContent = `Connect to ${selectedNetwork}`;
+                            networkPassword.value = ''; // Clear password input
+                            networkPasswordInput.style.display = 'block'; // Show password input for selected network
+                        });
+                        networkListDiv.appendChild(networkDiv);
                     });
                 }
             })
@@ -50,10 +45,28 @@ document.addEventListener('DOMContentLoaded', () => {
             });
     }
 
+    // Function to attempt network connection
+    function attemptConnection(networkName, password) {
+        fetch('connect_to_network.php', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ networkName: networkName, password: password }),
+        })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    console.log('Connected successfully to', networkName);
+                } else {
+                    console.error('Failed to connect to', networkName, ':', data.error);
+                }
+            })
+            .catch(error => console.error('Error connecting to network:', error));
+    }
+
     connectNewButton.addEventListener('click', () => toggleModal(true));
     closeButton.addEventListener('click', () => toggleModal(false));
-
-    // Close the modal if the user clicks anywhere outside of the modal content
     window.addEventListener('click', (event) => {
         if (event.target === modal) {
             toggleModal(false);
@@ -62,15 +75,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Connect button logic
     connectButton.addEventListener('click', () => {
-        const password = networkPassword.value;
-        if (selectedNetwork && password) {
-            console.log(`Attempting to connect to ${selectedNetwork}...`);
-            // Here you would add the fetch request to connect to the selected network
-            // For demonstration, we're just logging to the console
-            console.log(`Connecting to ${selectedNetwork} with password ${password}`);
-            // Reset UI elements
-            selectedNetwork = '';
-            toggleModal(false);
+        if (selectedNetwork && networkPassword.value) {
+            attemptConnection(selectedNetwork, networkPassword.value);
+            // Do not hide the modal immediately after clicking "Connect"
+            // The modal will stay open showing the connection attempt status
         } else {
             console.error('Network name or password is missing.');
         }
