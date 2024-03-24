@@ -12,7 +12,7 @@ document.addEventListener('DOMContentLoaded', () => {
     function toggleModal(show) {
         modal.style.display = show ? 'block' : 'none';
         if (show) {
-            networkPasswordInput.style.display = 'none'; // Hide password input initially
+            networkPasswordInput.style.display = 'none';
             fetchAndDisplayNetworks();
         }
     }
@@ -23,7 +23,7 @@ document.addEventListener('DOMContentLoaded', () => {
         fetch('fetch_networks.php')
             .then(response => response.json())
             .then(data => {
-                networkListDiv.innerHTML = ''; // Clear current list
+                networkListDiv.innerHTML = '';
                 if (data.error) {
                     console.error('Error fetching networks:', data.error);
                     networkListDiv.textContent = 'Error fetching networks.';
@@ -35,8 +35,8 @@ document.addEventListener('DOMContentLoaded', () => {
                         networkDiv.addEventListener('click', () => {
                             selectedNetwork = network;
                             networkNameDisplay.textContent = `Connect to ${selectedNetwork}`;
-                            networkPassword.value = ''; // Clear password input
-                            networkPasswordInput.style.display = 'block'; // Show password input for selected network
+                            networkPassword.value = '';
+                            networkPasswordInput.style.display = 'block';
                         });
                         networkListDiv.appendChild(networkDiv);
                     });
@@ -80,13 +80,7 @@ document.addEventListener('DOMContentLoaded', () => {
     connectButton.addEventListener('click', () => {
         const password = networkPassword.value;
         if (selectedNetwork && password) {
-            // Prevent the modal from closing
-            // modal.style.display = 'none'; // Remove or comment out this line
-
-            // Perform the network connection attempt
             console.log(`Attempting to connect to ${selectedNetwork}...`);
-
-            // Send the connection request to the server
             fetch('connect_to_network.php', {
                 method: 'POST',
                 headers: {
@@ -99,6 +93,7 @@ document.addEventListener('DOMContentLoaded', () => {
             })
                 .then(response => response.json())
                 .then(data => {
+                    console.log(data.output); // Show command output directly in the console
                     if (data.success) {
                         console.log("Connected successfully to " + selectedNetwork);
                     } else {
