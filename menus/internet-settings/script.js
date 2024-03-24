@@ -75,10 +75,33 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Connect button logic
     connectButton.addEventListener('click', () => {
-        if (selectedNetwork && networkPassword.value) {
-            attemptConnection(selectedNetwork, networkPassword.value);
-            // Do not hide the modal immediately after clicking "Connect"
-            // The modal will stay open showing the connection attempt status
+        const password = networkPassword.value;
+        if (selectedNetwork && password) {
+            console.log(`Attempting to connect to ${selectedNetwork}...`);
+
+            // Make a fetch request to connect_to_network.php with the network name and password
+            fetch('connect_to_network.php', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ networkName: selectedNetwork, password: password })
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        console.log('Connected successfully to', selectedNetwork);
+                        // Optionally, display a success message on the page or modal
+                    } else {
+                        console.error('Failed to connect to', selectedNetwork, ':', data.error);
+                        // Optionally, display an error message on the page or modal
+                    }
+                })
+                .catch(error => {
+                    console.error('Error connecting to network:', error);
+                    // Optionally, display an error message on the page or modal
+                });
+
         } else {
             console.error('Network name or password is missing.');
         }
