@@ -11,7 +11,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function toggleModal(show) {
         modal.style.display = show ? 'block' : 'none';
-        networkPasswordInput.style.display = 'none'; // Hide password input initially
+        if (show) {
+            networkPasswordInput.style.display = 'none'; // Hide password input initially
+            fetchAndDisplayNetworks();
+        }
     }
 
     // Function to fetch and display networks
@@ -77,31 +80,34 @@ document.addEventListener('DOMContentLoaded', () => {
     connectButton.addEventListener('click', () => {
         const password = networkPassword.value;
         if (selectedNetwork && password) {
+            // Prevent the modal from closing
+            // modal.style.display = 'none'; // Remove or comment out this line
+
+            // Perform the network connection attempt
             console.log(`Attempting to connect to ${selectedNetwork}...`);
 
-            // Make a fetch request to connect_to_network.php with the network name and password
+            // Send the connection request to the server
             fetch('connect_to_network.php', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({ networkName: selectedNetwork, password: password })
+                body: JSON.stringify({
+                    networkName: selectedNetwork,
+                    password: password,
+                }),
             })
                 .then(response => response.json())
                 .then(data => {
                     if (data.success) {
-                        console.log('Connected successfully to', selectedNetwork);
-                        // Optionally, display a success message on the page or modal
+                        console.log("Connected successfully to " + selectedNetwork);
                     } else {
-                        console.error('Failed to connect to', selectedNetwork, ':', data.error);
-                        // Optionally, display an error message on the page or modal
+                        console.error("Failed to connect to " + selectedNetwork + ". Error: " + data.error);
                     }
                 })
                 .catch(error => {
-                    console.error('Error connecting to network:', error);
-                    // Optionally, display an error message on the page or modal
+                    console.error('Connection error:', error);
                 });
-
         } else {
             console.error('Network name or password is missing.');
         }
