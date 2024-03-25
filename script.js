@@ -2,7 +2,7 @@ function playAnimationAndLoadContent(serviceId) {
     //URLs
     const urlMap = {
         'service-luna': 'https://luna.amazon.com/',
-        'service-retropie': 'http://retropie.local/',
+        'service-retropie': '/menus/emulators-menu/index.php',
         'service-xbox': 'https://xbox.com/play',
         'service-steam': 'https://store.steampowered.com/'
     };

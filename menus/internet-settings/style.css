@@ -5,6 +5,7 @@ body {
     margin: 0;
     padding: 0;
     display: flex;
+    flex-direction: column;
     align-items: center;
     justify-content: center;
     height: 100vh;
@@ -146,6 +147,11 @@ h1 {
     width: 80%; /* Could be more or less, depending on screen size */
 }
 
+.modal-content h2 {
+    color: black; /* or any color you prefer */
+}
+
+
 .close-button {
     color: #aaaaaa;
     float: right;
@@ -160,13 +166,45 @@ h1 {
     cursor: pointer;
 }
 
-.network-name {
-    padding: 10px;
+.network-button {
+    background-color: #007BFF; /* Lighter blue for visibility */
+    color: white;
+    border: none;
+    border-radius: 5px;
+    padding: 10px 20px;
     margin: 5px 0;
-    border: 1px solid #ddd;
     cursor: pointer;
+    transition: background-color 0.3s, transform 0.2s;
+    text-align: center;
+    font-size: 16px; /* Adjust font size as needed */
 }
 
-    .network-name:hover {
-        background-color: #f1f1f1;
-    }
+.network-button:hover {
+    background-color: #0056b3; /* Darker shade of button for hover effect */
+    transform: scale(1.05); /* Slight scale effect on hover */
+}
+
+.gamepad-unsupported-notice {
+    text-align: center;
+    background-color: #f8d7da; /* Light red background color for warnings */
+    color: #721c24; /* Dark red text color for better visibility and contrast */
+    border: 1px solid #f5c6cb; /* Slightly darker border to stand out */
+    padding: 10px;
+    margin-bottom: 20px; /* Add some space below the notice */
+    border-radius: 5px; /* Rounded borders for a smoother look */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Optional: subtle shadow for depth */
+    width: 400px; /* Adapt width to container while allowing for padding */
+    height: 50px;
+    box-sizing: border-box; /* Make sure padding doesn't affect the final width */
+}
+
+#current-network-display {
+    color: black; /* Ensure text is black */
+    margin-top: 10px; /* Add some space above the current network display for clarity */
+    font-size: 16px; /* Adjust the font size as needed */
+}
+
+    /* Optionally, style the span within for more specific control */
+#current-network-display #current-network-name {
+    font-weight: bold; /* Make the actual network name bold */
+}

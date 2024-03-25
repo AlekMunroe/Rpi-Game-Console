@@ -1,114 +1,115 @@
-document.addEventListener('DOMContentLoaded', () => {
-    const connectNewButton = document.getElementById('connect-new');
-    const modal = document.getElementById('network-modal');
-    const closeButton = document.querySelector('.close-button');
-    const networkListDiv = document.getElementById('networks-list');
-    const networkPasswordInput = document.getElementById('network-password-input');
-    const connectButton = document.getElementById('connect-button');
-    const networkPassword = document.getElementById('network-password');
-    const networkNameDisplay = document.getElementById('network-name-display');
-    let selectedNetwork = '';
+document.addEventListener('DOMContentLoaded', function () {
+    var modal = document.getElementById('network-modal');
+    var btn = document.getElementById('connect-new');
+    var backbtn = document.getElementById('main-menu');
+    var span = document.getElementsByClassName('close-button')[0];
 
-    function toggleModal(show) {
-        modal.style.display = show ? 'block' : 'none';
-        if (show) {
-            networkPasswordInput.style.display = 'none';
-            fetchAndDisplayNetworks();
+    backbtn.onclick = function () {
+        window.location.href = '/';
+    }
+
+    btn.onclick = function () {
+        modal.style.display = 'block';
+        fetchAvailableNetworks();
+        fetchCurrentNetwork();
+    }
+
+    span.onclick = function () {
+        modal.style.display = 'none';
+    }
+
+    window.onclick = function (event) {
+        if (event.target == modal) {
+            modal.style.display = 'none';
         }
     }
 
-    // Function to fetch and display networks
-    function fetchAndDisplayNetworks() {
-        console.log('Scanning for networks...');
-        fetch('fetch_networks.php')
+    function fetchAvailableNetworks() {
+        fetch('fetch_available_networks.php')
             .then(response => response.json())
             .then(data => {
-                networkListDiv.innerHTML = '';
-                if (data.error) {
-                    console.error('Error fetching networks:', data.error);
-                    networkListDiv.textContent = 'Error fetching networks.';
-                } else {
-                    data.forEach(network => {
-                        const networkDiv = document.createElement('div');
-                        networkDiv.className = 'network-name';
-                        networkDiv.textContent = network;
-                        networkDiv.addEventListener('click', () => {
-                            selectedNetwork = network;
-                            networkNameDisplay.textContent = `Connect to ${selectedNetwork}`;
-                            networkPassword.value = '';
-                            networkPasswordInput.style.display = 'block';
-                        });
-                        networkListDiv.appendChild(networkDiv);
-                    });
-                }
+                const networksList = document.getElementById('networks-list');
+                networksList.innerHTML = '';
+                data.forEach(ssid => {
+                    if (ssid) {
+                        const button = document.createElement('button');
+                        button.textContent = ssid;
+                        button.classList.add('network-button');
+                        button.onclick = function () {
+                            showPasswordInput(ssid);
+                        };
+                        networksList.appendChild(button);
+                    }
+                });
             })
             .catch(error => {
-                console.error('Fetch error:', error);
-                networkListDiv.textContent = 'Error fetching networks.';
+                console.error('Error fetching networks:', error);
             });
     }
 
-    // Function to attempt network connection
-    function attemptConnection(networkName, password) {
-        fetch('connect_to_network.php', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ networkName: networkName, password: password }),
-        })
+    function fetchCurrentNetwork() {
+        fetch('get_current_network.php')
             .then(response => response.json())
             .then(data => {
-                if (data.success) {
-                    console.log('Connected successfully to', networkName);
+                const currentNetworkDisplay = document.getElementById('current-network-name');
+                if (data && data.currentNetwork) {
+                    currentNetworkDisplay.textContent = data.currentNetwork;
                 } else {
-                    console.error('Failed to connect to', networkName, ':', data.error);
+                    currentNetworkDisplay.textContent = 'Not connected';
                 }
             })
-            .catch(error => console.error('Error connecting to network:', error));
+            .catch(error => {
+                console.error('Error fetching current network:', error);
+                document.getElementById('current-network-name').textContent = 'Error';
+            });
     }
 
-    connectNewButton.addEventListener('click', () => toggleModal(true));
-    closeButton.addEventListener('click', () => toggleModal(false));
-    window.addEventListener('click', (event) => {
-        if (event.target === modal) {
-            toggleModal(false);
-        }
-    });
 
-    // Connect button logic
-    connectButton.addEventListener('click', () => {
-        const password = networkPassword.value;
-        if (selectedNetwork && password) {
-            console.log(`Attempting to connect to ${selectedNetwork}...`);
+    function showPasswordInput(ssid) {
+        const passwordInputDiv = document.getElementById('network-password-input');
+        const networkNameDisplay = document.getElementById('network-name-display');
+        networkNameDisplay.textContent = 'Network: ' + ssid;
+
+        const connectButton = document.getElementById('connect-button');
+        const passwordField = document.getElementById('network-password');
+        passwordField.value = ''; // Clear previous input
+
+        // Ensure the message display element exists
+        let messageDisplay = document.getElementById('network-message-display');
+        if (!messageDisplay) {
+            messageDisplay = document.createElement('div');
+            messageDisplay.id = 'network-message-display';
+            passwordInputDiv.appendChild(messageDisplay);
+        }
+
+        connectButton.onclick = function () {
+            const password = passwordField.value;
+            messageDisplay.textContent = ''; // Clear previous messages
+
             fetch('connect_to_network.php', {
                 method: 'POST',
                 headers: {
-                    'Content-Type': 'application/json',
+                    'Content-Type': 'application/x-www-form-urlencoded',
                 },
-                body: JSON.stringify({
-                    networkName: selectedNetwork,
-                    password: password,
-                }),
+                body: `ssid=${encodeURIComponent(ssid)}&password=${encodeURIComponent(password)}`,
             })
                 .then(response => response.json())
                 .then(data => {
-                    console.log(data.output); // Show command output directly in the console
                     if (data.success) {
-                        console.log("Connected successfully to " + selectedNetwork);
+                        messageDisplay.textContent = data.message;
+                        messageDisplay.style.color = 'green';
                     } else {
-                        console.error("Failed to connect to " + selectedNetwork + ". Error: " + data.error);
+                        messageDisplay.textContent = data.message;
+                        messageDisplay.style.color = 'red';
                     }
                 })
                 .catch(error => {
-                    console.error('Connection error:', error);
+                    console.error('Error:', error);
+                    messageDisplay.textContent = 'Connection error. Please try again.';
+                    messageDisplay.style.color = 'red';
                 });
-        } else {
-            console.error('Network name or password is missing.');
-        }
-    });
+        };
 
-    // Periodic network scanning
-    const scanInterval = 30000; // 30 seconds
-    setInterval(fetchAndDisplayNetworks, scanInterval);
+        passwordInputDiv.style.display = 'block';
+    }
 });

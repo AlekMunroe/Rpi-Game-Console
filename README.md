@@ -47,6 +47,9 @@ chromium-browser http://localhost
 * CTRL + Y
 * CRTL + S
 
+* type "sudo vistudio"
+* Paste this into the end: www-data ALL=(ALL) NOPASSWD: /usr/bin/nmcli
+
 * type "sudo reboot"
 
 * Open a new tab on the pi
@@ -55,6 +58,9 @@ chromium-browser http://localhost
 * Click "Load unpacked" on the top left
 * Locate the chrome extension in /var/www/html/Chrome-Extension
 * Click "Open" on the bottom left
+
+* Go to chrome://flags
+* Set "Web Bluetooth" to enabled
 
 * Click on each service and login to your account
 

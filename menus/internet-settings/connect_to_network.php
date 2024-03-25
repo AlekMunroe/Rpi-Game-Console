@@ -1,20 +1,20 @@
 <?php
-header('Content-Type: application/json');
+// Get SSID and password from the request
+$ssid = $_POST['ssid'] ?? '';
+$password = $_POST['password'] ?? '';
 
-$data = json_decode(file_get_contents('php://input'), true);
-$networkName = $data['networkName'];
-$password = $data['password'];
+// Prepare the command to connect to the network
+$command = escapeshellcmd("sudo nmcli dev wifi connect '".escapeshellarg($ssid)."' password '".escapeshellarg($password)."'");
 
-if (empty($networkName) || empty($password)) {
-    echo json_encode(['success' => false, 'error' => 'Network name or password is missing.']);
-    exit;
-}
+// Execute the command
+$output = shell_exec($command);
 
-$command = "sudo nmcli dev wifi connect " . escapeshellarg($networkName) . " password " . escapeshellarg($password);
-$output = shell_exec($command . " 2>&1");
-
+// Check the output for success or failure
 if (strpos($output, "successfully activated") !== false) {
-    echo json_encode(['success' => true, 'output' => $output]);
+    $response = ['success' => true, 'message' => "Connected to $ssid successfully."];
 } else {
-    echo json_encode(['success' => false, 'error' => 'Failed to connect.', 'output' => $output]);
+    $response = ['success' => false, 'message' => "Failed to connect to $ssid."];
 }
+
+// Return the response as JSON
+echo json_encode($response);
